@@ -1,15 +1,16 @@
 .not-choosen{
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  grid-gap: 20px;
-  align-items: start;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
 }
 
 .card{
   position: relative;
+  width:300px;
   cursor: pointer;
   background: #7cc6fe;
   border: none ;
+  margin: 10px;
 }
 
 .card .face{
@@ -65,20 +66,7 @@
   transform: translateY(0);
 }
 
-.card .face.face2 .content p{
-  margin: 0;
-  padding: 0;
-}
 
-.card .face.face2 .content a{
-  margin: 15px 0 0;
-  display:  inline-block;
-  text-decoration: none;
-  font-weight: 900;
-  color: #333;
-  padding: 5px;
-  border: 1px solid #333;
-}
 
 .card .face.face2 .content a:hover{
   background: #333;

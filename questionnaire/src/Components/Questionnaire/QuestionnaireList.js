@@ -1,7 +1,9 @@
 import React from 'react';
+import Button from 'react-bootstrap/Button'
 import "./QuestionnaireList.scss"
 
 class QuestionnaireList extends React.Component {
+
   render() {
     return (
       <React.Fragment>
@@ -9,21 +11,22 @@ class QuestionnaireList extends React.Component {
         
         <div className="not-choosen">
         {this.props.questionnaire.map((questionnaire, i) => (
-            <div className="card" key={i}>
-              <div className="face face1">
-                <div className="content">
+          <div className="card" key={i}>
+            <div className="face face1">
+              <div className="content">
 
-                  <h3>{questionnaire.topic}</h3>
-                </div>
-              </div>
-              <div className="face face2">
-                <div className="content">
-                  <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas cum cumque minus iste veritatis provident at.</p>
-                  {/* <a href="#">Read More</a> */}
-                </div>
+                <h3>{questionnaire.topic}</h3>
               </div>
             </div>
-          ))}
+            <div className="face face2">
+              <div className="content">
+                <Button variant="primary" type="submit" onClick={e => this.props.chooseQuestionnaire(questionnaire)}>
+                  Take Quiz
+                </Button>
+              </div>
+            </div>
+          </div>
+        ))}
         </div>
         
         

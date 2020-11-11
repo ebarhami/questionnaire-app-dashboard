@@ -28,8 +28,8 @@ class Home extends React.Component {
     };
 
     createUser(data)
-      .then(async () => {
-        await this.props.setUsername(this.state.formUsername)
+      .then(async res => {
+        await this.props.setUser(res.data)
         this.props.history.push("/questionnaire")
       })
       .catch(err => console.log("error" + err));
@@ -49,7 +49,7 @@ class Home extends React.Component {
             </Form.Group>
             <Button variant="primary" type="submit" disabled={this.state.formUsername === ""} onClick={e => this.submitFormHandler(e)}>
               Submit
-          </Button>
+            </Button>
           </Form>
         </Zoom>
       </div>

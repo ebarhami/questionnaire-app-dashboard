@@ -2,7 +2,9 @@ import React from "react"
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import Home from "./Components/Home/Home"
 import Questionnaire from "./Components/Questionnaire/Questionnaire"
-import {getQuestionnaire} from "./Client/QuestionnaireClient"
+import Standings from "./Components/Standings/Standings"
+import DetailResult from "./Components/DetailResult/DetailResult"
+import {getQuestionnaires} from "./Client/QuestionnaireClient"
 import 'bootstrap/dist/css/bootstrap.css';
 
 import './App.css';
@@ -12,10 +14,10 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      username: "",
+      user: null,
       questionnaire: null
     }
-    this.setUsername = this.setUsername.bind(this)
+    this.setUser = this.setUser.bind(this)
     this.setQuestionnaire = this.setQuestionnaire.bind(this)
   }
 
@@ -24,17 +26,16 @@ class App extends React.Component {
   }
 
   setQuestionnaire() {
-    getQuestionnaire().then(res => {
+    getQuestionnaires().then(res => {
       this.setState({
         questionnaire: res.data,
       });
     });
   }
 
-  setUsername(username) {
-    console.log("AM" + username)
+  setUser(user) {
     this.setState({
-      username: username,
+      user: user,
     });
   }
 
@@ -43,11 +44,18 @@ class App extends React.Component {
       <div className="App">
         <BrowserRouter>
           <Switch>
+            <Route path="/detail/:id" render={() => <DetailResult/>} />
+
+            <Route path="/standings" render={() => <Standings
+              questionnaire={this.state.questionnaire}/>} />
+            
             <Route path="/questionnaire" render={() => <Questionnaire 
-              username={this.state.username} 
+              user={this.state.user} 
               questionnaire={this.state.questionnaire}
               setQuestionnaire={this.state.setQuestionnaire} />} />
-            <Route exact path="/" render={() => <Home setUsername={this.setUsername} />} />
+            
+            <Route exact path="/" render={() => <Home 
+              setUser={this.setUser} />} />
             <Route component={Error} />
           </Switch>
         </BrowserRouter>

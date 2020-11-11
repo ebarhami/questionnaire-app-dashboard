@@ -3,6 +3,9 @@ import { withRouter } from "react-router-dom"
 import QuestionnaireList from "./QuestionnaireList"
 import "./Questionnaire.scss"
 import 'bootstrap/dist/css/bootstrap.css';
+import {
+  answerQuestionnaire
+} from '../../Client/QuestionnaireClient';
 
 
 class Questionnaire extends React.Component {
@@ -10,59 +13,30 @@ class Questionnaire extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      questionnaireChoosen: "",
+      questionnaireChoosen: null,
       currentQuestion: 0,
       answers: [],
       isDone: false,
-      questions: [
-        {
-          questionText: 'What is the capital of France?',
-          answerOptions: [
-            { answerText: 'New York', isCorrect: false },
-            { answerText: 'London', isCorrect: false },
-            { answerText: 'Paris', isCorrect: true },
-            { answerText: 'Dublin', isCorrect: false },
-          ],
-        },
-        {
-          questionText: 'Who is CEO of Tesla?',
-          answerOptions: [
-            { answerText: 'Jeff Bezos', isCorrect: false },
-            { answerText: 'Elon Musk', isCorrect: true },
-            { answerText: 'Bill Gates', isCorrect: false },
-            { answerText: 'Tony Stark', isCorrect: false },
-          ],
-        },
-        {
-          questionText: 'The iPhone was created by which company?',
-          answerOptions: [
-            { answerText: 'Apple', isCorrect: true },
-            { answerText: 'Intel', isCorrect: false },
-            { answerText: 'Amazon', isCorrect: false },
-            { answerText: 'Microsoft', isCorrect: false },
-          ],
-        },
-        {
-          questionText: 'How many Harry Potter books are there?',
-          answerOptions: [
-            { answerText: '1', isCorrect: false },
-            { answerText: '4', isCorrect: false },
-            { answerText: '6', isCorrect: false },
-            { answerText: '7', isCorrect: true },
-          ],
-        },
-      ]
+      score: -1
     }
     this.handleChooseAnswer = this.handleChooseAnswer.bind(this)
+    this.chooseQuestionnaire = this.chooseQuestionnaire.bind(this)
+    this.sendAnswer = this.sendAnswer.bind(this)
+    this.jumpToBoard = this.jumpToBoard.bind(this)
+  }
+
+  chooseQuestionnaire(questionnaire) {
+    this.setState({
+      questionnaireChoosen: questionnaire
+    });
   }
 
   handleChooseAnswer(answer) {
     this.setState({
-      answers: this.state.answers.push(answer),
+      answers: this.state.answers.concat(answer),
     });
-
     const nextQuestion = this.state.currentQuestion + 1;
-    if (nextQuestion < this.state.questions.length) {
+    if (nextQuestion < this.state.questionnaireChoosen.questions.length) {
       this.setState({
         currentQuestion: nextQuestion,
       });
@@ -72,32 +46,59 @@ class Questionnaire extends React.Component {
       });
     }
   }
+
+  sendAnswer(data) {
+    answerQuestionnaire(data)
+      .then(res => {
+        this.setState({
+          score: res.data.score
+        })
+      })
+      .catch(err => console.log("error" + err));
+  }
+
+  jumpToBoard() {
+    this.props.history.push("/standings")
+  }
+
   render() {
     let comp;
-    if (this.props.username === "") {
+    if (!this.props.user) {
       this.props.history.push("/")
     } else if (this.state.isDone) {
+      const data = {
+        user: this.props.user._id,
+        questionnaire: this.state.questionnaireChoosen,
+        answers: this.state.answers
+      }
+
+      if (this.state.score === -1) {
+        this.sendAnswer(data)
+      }
+      
       comp = 
         <div className='done-section' >
-          Done
+          You answered {this.state.score} question correct
+          <button onClick={this.jumpToBoard}>Go to scoreboards</button>
         </div>
     } else if (!this.props.questionnaire) {
       this.props.setQuestionnaire()
-    } else if (this.state.questionnaireChoosen === "") {
-      comp = <QuestionnaireList questionnaire={this.props.questionnaire}/>
+    } else if (!this.state.questionnaireChoosen) {
+      comp = <QuestionnaireList questionnaire={this.props.questionnaire} chooseQuestionnaire={this.chooseQuestionnaire}/>
     } else {
+      const quiz = this.state.questionnaireChoosen.questions
       comp = 
         <>
         <div className='app' >
           <div className='question-section'>
             <div className='question-count'>
-              <span>Question {this.state.currentQuestion + 1}</span>/{this.state.questions.length}
+              <span>Question {this.state.currentQuestion + 1}</span>/{quiz.length}
             </div>
-            <div className='question-text'>{this.state.questions[this.state.currentQuestion].questionText}</div>
+            <div className='question-text'>{quiz[this.state.currentQuestion].question}</div>
           </div>
           <div className='answer-section'>
-            {this.state.questions[this.state.currentQuestion].answerOptions.map((answerOption, index) => (
-              <button key={index} onClick={() => this.handleChooseAnswer(answerOption.isCorrect)}>{answerOption.answerText}</button>
+            {quiz[this.state.currentQuestion].answer_option.map((option, i) => (
+              <button key={i} onClick={() => this.handleChooseAnswer(i)}>{option}</button>
             ))}
           </div>
         </div>

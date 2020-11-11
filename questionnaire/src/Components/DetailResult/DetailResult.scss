@@ -1,0 +1,14 @@
+.question {
+    border: solid #000;
+    border-radius: 2rem;
+    padding: 1rem;
+    margin: 0.5rem;
+    .question-text {
+        font-weight: bold;
+        color: #000;
+    }
+    .question-answer {
+        font-weight: bold;
+        color: #000;
+    }
+}
