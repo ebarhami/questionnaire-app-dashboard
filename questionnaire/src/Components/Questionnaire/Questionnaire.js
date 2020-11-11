@@ -76,11 +76,17 @@ class Questionnaire extends React.Component {
         this.sendAnswer(data)
       }
       
-      comp = 
-        <div className='done-section' >
-          You answered {this.state.score} question correct
-          <button onClick={this.jumpToBoard}>Go to scoreboards</button>
+      if (this.state.score === -1) {
+        comp = <div className='done-section' >
+          Loading ...
         </div>
+      } else {
+        comp =
+          <div className='done-section' >
+            You answered {this.state.score} question correct
+          <button onClick={this.jumpToBoard}>Go to scoreboards</button>
+          </div>
+      }
     } else if (!this.props.questionnaire) {
       this.props.setQuestionnaire()
     } else if (!this.state.questionnaireChoosen) {
